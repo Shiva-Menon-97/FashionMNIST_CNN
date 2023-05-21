@@ -148,7 +148,8 @@ train_test_model(fmnist, loss_fn, optimizer, train_dl, test_dl,
 
 # %%
 ### Section 3 - Evaluating the performance of our CNN on Test Data
-eval_model(fmnist, test_dl, loss_fn, 10, device)
+test_results = eval_model(fmnist, test_dl, loss_fn, len(test_data.classes), device)
+print(test_results,"\n")
 
 # Calculating predictions on the Whole Test Dataset (for Confusion Matrix)
 from tqdm.auto import tqdm
