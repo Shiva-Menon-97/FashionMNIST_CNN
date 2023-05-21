@@ -151,24 +151,14 @@ def eval_model(model: torch.nn.Module,
             y_pred = torch.argmax(torch.softmax(y_logits,dim=1),dim=1)
             loss += loss_fn(y_logits, y)
             acc += acc_fn(y_pred, y)
-            y_target, y_pred = y.cpu().numpy(), y_pred.cpu().numpy()            
-            prn += metrics.precision_score(y_target, y_pred, average="micro")
-            rcl += metrics.recall_score(y_target, y_pred, average="micro")
-            f1 += metrics.f1_score(y_target, y_pred, average="micro")
-        
+            
         # Scale loss and acc
         loss /= len(data_loader)
         acc /= len(data_loader)
-        prn /= len(data_loader)
-        rcl /= len(data_loader)
-        f1 /= len(data_loader)
-
+        
     return {"model_name": model.__class__.__name__, # only works when model was created with a class
             "model_loss": loss.item(),
-            "model_acc": acc,
-            "model_prn": prn,
-            "model_rcl": rcl,
-            "model_f1": f1}
+            "model_acc": acc}
 
 ### Section 2 - Helper Functions by others
 def walk_through_dir(dir_path):
