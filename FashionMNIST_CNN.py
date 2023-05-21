@@ -18,7 +18,6 @@ import matplotlib.pyplot as plt
 
 # Importing helper functions
 from helper_functions import print_train_time, train_test_model, eval_model
-from mlextend 
 
 print(torch.__version__)
 print(torchvision.__version__)
@@ -77,7 +76,7 @@ class_names = train_data.classes
 
 # %%
 
-### Section 2 - Creating Version 1 of FashionMNIST CNN
+### Section 2 - Creating and training our FashionMNIST CNN
 
 class FMNIST(nn.Module):
     def __init__(self, input_shape:int, hidden_units:int, output_shape:int):
@@ -130,32 +129,74 @@ class FMNIST(nn.Module):
         return x
 
 torch.manual_seed(42)
-tinyvgg1 = FMNIST(1, 64, len(class_names)).to(device)
-print(tinyvgg1)
+fmnist = FMNIST(1, 64, len(class_names)).to(device)
+print(fmnist)
 
 
 # %%
 # Optimizer and Loss Function
-optimizer = torch.optim.SGD(tinyvgg1.parameters(),lr=0.1)
+optimizer = torch.optim.SGD(fmnist.parameters(),lr=0.1)
 loss_fn = nn.CrossEntropyLoss().to(device)
 acc_fn = Accuracy('multiclass', num_classes=10).to(device)
 
 
 # %%
-train_test_model(tinyvgg1, loss_fn, optimizer, train_dl, test_dl, 
+train_test_model(fmnist, loss_fn, optimizer, train_dl, test_dl, 
                  acc_fn, 5)
 
 
 
 # %%
 ### Section 3 - Evaluating the performance of our CNN on Test Data
-eval_model(tinyvgg1, test_dl, loss_fn, 10, device)
+eval_model(fmnist, test_dl, loss_fn, 10, device)
 
-# %%
-## Making a confusion Matrix for further prediction evaluation
+# Calculating predictions on the Whole Test Dataset (for Confusion Matrix)
+from tqdm.auto import tqdm
+
+test_preds = []
 
 # To disable Dropout layers
-with torch.inference_mode()
-for X, y in test_dl:
-    
+fmnist.eval()
 
+# To prevent gradient updation
+with torch.inference_mode():
+    for X, y in tqdm(test_dl):
+        y_logits = torch.softmax(fmnist(X),dim=1)
+        y_preds = torch.argmax(y_logits, dim=1)
+        test_preds.append(y_preds.cpu())
+
+# Concatenate list of predictions into a single 1D Tensor
+test_preds = torch.cat(test_preds)
+
+
+# %%
+## Plotting Confusion Matrix on predictions for Test Data
+
+from mlxtend.plotting import plot_confusion_matrix
+
+conf_mat = ConfusionMatrix('multiclass', num_classes=len(test_data.classes))
+# Here, torchvision's dataset.targets returns the label data
+# The result of conf_mat will be a tensor -- change it to a Numpy Array
+# so that we can plot it using mlxtend's plot_confusion_matrix
+confmat_ny = conf_mat(test_preds, test_data.targets).numpy()
+
+# Beautifying and plotting the Confusion Matrix
+fig, ax = plot_confusion_matrix(conf_mat=confmat_ny,
+                                class_names=test_data.classes,
+                                figsize=(10,7),
+                                cmap='cool')
+
+# %%
+from pathlib import Path
+
+MODEL_PATH = Path("models")
+MODEL_PATH.mkdir(parents=True, exist_ok=True)
+
+# Here, .pth represents Pytorch
+MODEL_NAME = "FashionMNIST_CNN_1.pth"
+FINAL_MODEL_SAVE_PATH = MODEL_PATH / MODEL_NAME
+
+#  Save the Model's State Dictionary, that contains the weights and other parameters.
+print(f"Saving our final model to {FINAL_MODEL_SAVE_PATH}")
+torch.save(obj=fmnist.state_dict(),f=FINAL_MODEL_SAVE_PATH)
+print("Model Saved!")
