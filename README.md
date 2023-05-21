@@ -2,10 +2,14 @@
  A CNN Architecture built on PyTorch to classify the Fashion MNIST Dataset.
  
  The CNN Architecture I implemented gave me a final Training Accuracy of 93% and a Testing Accuracy of 92%.
+
+ Apart from performance boosts due to multiple Convolution Layers and Dropout Layers, this performance was achieved using Hyper-Parameter Optimization.
  
- This performance was also very dependent on Hyper-Parameter Optimization!
+ Along with the Cross Entropy Loss function, I used the SGD optimizer with a fairly large learning rate of 0.15 over 5 epochs.
  
- This architecture is as follows:
+ I could use lr=0.15 since I was using Batch Normalization layers, which reduce Internal Covariance Shift in the distributions of the Inputs passing between the Convolutional Layers. This meant that we could accelerate the learning process without risking overshooting the optima.
+ 
+ The CNN architecture is as follows:
  
   FMNIST:
 
