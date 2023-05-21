@@ -10,7 +10,7 @@ from torch import nn
 import torchvision
 
 # Torchmetrics
-from torchmetrics import Accuracy, Precision, Recall, F1Score
+from torchmetrics import Accuracy, Precision, Recall, F1Score, ConfusionMatrix
 
 # Importing Numpy and Matplotlib
 import numpy as np
@@ -18,6 +18,7 @@ import matplotlib.pyplot as plt
 
 # Importing helper functions
 from helper_functions import print_train_time, train_test_model, eval_model
+from mlextend 
 
 print(torch.__version__)
 print(torchvision.__version__)
@@ -150,8 +151,11 @@ train_test_model(tinyvgg1, loss_fn, optimizer, train_dl, test_dl,
 ### Section 3 - Evaluating the performance of our CNN on Test Data
 eval_model(tinyvgg1, test_dl, loss_fn, 10, device)
 
-
 # %%
-test_preds = tinyvgg1(test_data)
+## Making a confusion Matrix for further prediction evaluation
 
-# %%
+# To disable Dropout layers
+with torch.inference_mode()
+for X, y in test_dl:
+    
+
