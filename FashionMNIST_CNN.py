@@ -45,9 +45,20 @@ test_data = torchvision.datasets.FashionMNIST(root="data",
                                               transform=torchvision.transforms.ToTensor(),
                                               target_transform=None)
 
-# %%
+
+#%%
+# Exploring our datasets
 print(f"Number of samples in Training Data: {len(train_data)}")
 print(f"Number of samples in Testing Data: {len(test_data)}")
+
+# Looking at the first image and associated label
+X, y = train_data[0]
+X = X.squeeze()
+class_names = train_data.classes
+
+plt.figure(figsize=(8,5))
+plt.imshow(X, cmap="gray")
+plt.title(class_names[y])
 
 # %% Creating Dataloaders
 from torch.utils.data import DataLoader
